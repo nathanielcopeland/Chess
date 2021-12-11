@@ -1,4 +1,4 @@
 ﻿  chess.cpp
-C:\Users\Nat\source\repos\chess\repo\chess\chess.cpp(38): warning C4715: 'Piece::getPiece': not all control paths return a value
-C:\Users\Nat\source\repos\chess\repo\chess\chess.cpp(305): warning C4715: 'Board::moveRook': not all control paths return a value
+C:\Users\Nat\source\repos\chess\repo\chess\chess.cpp(51): warning C4715: 'Piece::getPiece': not all control paths return a value
+C:\Users\Nat\source\repos\chess\repo\chess\chess.cpp(346): warning C4715: 'Board::moveRook': not all control paths return a value
   chess.vcxproj -> C:\Users\Nat\source\repos\chess\repo\Debug\chess.exe
