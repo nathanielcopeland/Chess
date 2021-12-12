@@ -1,4 +1,7 @@
 ﻿  chess.cpp
-C:\Users\Nat\source\repos\chess\repo\chess\chess.cpp(51): warning C4715: 'Piece::getPiece': not all control paths return a value
-C:\Users\Nat\source\repos\chess\repo\chess\chess.cpp(346): warning C4715: 'Board::moveRook': not all control paths return a value
+C:\Users\Nat\source\repos\chess\repo\chess\chess.cpp(843,27): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Nat\source\repos\chess\repo\chess\chess.cpp(863,16): warning C4101: 'y': unreferenced local variable
+C:\Users\Nat\source\repos\chess\repo\chess\chess.cpp(863,13): warning C4101: 'x': unreferenced local variable
+C:\Users\Nat\source\repos\chess\repo\chess\chess.cpp(400): warning C4715: 'Board::moveRook': not all control paths return a value
+C:\Users\Nat\source\repos\chess\repo\chess\chess.cpp(52): warning C4715: 'Piece::getPiece': not all control paths return a value
   chess.vcxproj -> C:\Users\Nat\source\repos\chess\repo\Debug\chess.exe

@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <string>
-
+#include <vector>
 
 enum Colour {
     White = 0, Black = 1, Empty = 2
@@ -23,6 +23,7 @@ class Piece {
     int x, y;
     int moveNum = 0;
     int enPassant = 0; //keeps the move number this was made at so that it can be checked if this matches board move number -1 and piece movenum == 1, can be captured with en passant
+    int attackedByWhite, attackedByBlack;
 public:
      char virtual getPiece() {
 
@@ -84,12 +85,39 @@ public:
      int getEnPassant() {
          return enPassant;
      }
+
+     void setAttack(int colour) {
+         if (colour == White) {
+             attackedByWhite += 1;
+         }
+         else attackedByBlack += 1;
+     }
+
+     void clearAttack() {
+         attackedByBlack = 0;
+         attackedByWhite = 0;
+     }
+
+     bool underAttack(int colour) {
+         if (colour == White && attackedByBlack > 0) {
+             return true;
+         }
+         if (colour == Black && attackedByWhite > 0) {
+             return true;
+         }
+         return false;
+     }
+
+     void testAttack() {
+         std::cout << "Black : " << attackedByBlack << " White : " << attackedByWhite << "\n";
+     }
 };
 
 class Board {
 public:
     Piece grid[8][8];
     int moveNum = 0;
+    std::vector<Piece> piecePositions;
     Board() {
         //p2->setColour();
         for (int i = 0; i < 8; i++)
@@ -100,9 +128,11 @@ public:
                 
                 if (i == 1) {
                     grid[i][j].setPiece(Pawn, Black);
+                    
                 }
                 if (i == 6) {
                     grid[i][j].setPiece(Pawn, White);
+                    
                 }
                 grid[i][j].setCoords(i, j);
             }
@@ -126,6 +156,28 @@ public:
         //Queens
         grid[0][3].setPiece(Queen, Black);
         grid[7][3].setPiece(Queen, White);
+        //kings
+        grid[0][4].setPiece(King, Black);
+        grid[7][4].setPiece(King, White);
+
+        
+    }
+
+    void resetList() {
+
+       piecePositions.clear();
+
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if (grid[i][j].getPiece() != ' ') {
+                    piecePositions.push_back(grid[i][j]);
+                    
+                }
+                grid[i][j].clearAttack();
+            }
+        }
     }
 
     void displayBoard() {
@@ -231,6 +283,8 @@ public:
         colour1 = src.getColour();
         colour2 = dst.getColour();
 
+
+        grid[1][2].testAttack();
 
         if (((x1 + 1 == x2) || (x1 + 2 == x2 && moves == 0)) && colour1 == Black) {
             if ((y1 + 1 == y2 || y1 - 1 == y2) && colour2 == White && x1 + 1 == x2) {
@@ -574,18 +628,265 @@ public:
         moves = src.getMoveNumber();
         colour1 = src.getColour();
         colour2 = dst.getColour();
+
+        if ((x1 - x2 == 1 || x1 - x2 == -1 || x1 - x2 == 0) && (y1 - y2 == 1 || y1 - y2 == -1 ||y1 - y2 ==  0) && !grid[x2][y2].underAttack(colour1)) {
+            if (x1 - x2 == 0 && y1 - y2 == 0) {
+                return false;
+            }
+            if (colour1 == White) {
+                grid[x2][y2].setPiece(King, White);
+            }
+            else {
+                grid[x2][y2].setPiece(King, Black);
+            }
+
+            grid[x2][y2].setMoveNumber(moves);
+            grid[x2][y2].setCoords(x2, y2);
+            grid[x1][y1].setPiece(Nothing, Empty);
+            std::cout << "moves : " << moves << "\n";
+            return true;
+        }
         return false;
+    }
+
+    void calculatePawnAttack(Piece src) {
+        int colour = src.getColour();
+        int x, y;
+        src.getCoords(x, y);
+        if (colour == White) {
+            if (y > 0) {
+             grid[x - 1][y - 1].setAttack(colour);
+            }
+            
+            if (y < 7) {
+                grid[x - 1][y + 1].setAttack(colour);
+            }
+            
+        }
+        else if (colour == Black) {
+            if (y > 0) {
+                grid[x + 1][y - 1].setAttack(colour);
+            }
+            if (y < 7) {
+                grid[x + 1][y + 1].setAttack(colour);
+            }
+            
+        }
+    }
+
+    void calculateRookAttack(Piece src) {
+        int colour = src.getColour();
+        int x, y, counter = 0;
+        src.getCoords(x, y);
+
+
+
+        //if piece = king and counter = 1 set all the spaces before king as pinned
+
+        for (int i = x+1; i < 8; i++)
+        {
+            grid[i][y].setAttack(colour);
+            if (grid[i][y].getPiece() != ' ') {
+                break;
+            }
+        }
+
+        for (int i = x-1; i >= 0; i--)
+        {
+            grid[i][y].setAttack(colour);
+            if (grid[i][y].getPiece() != ' ') {
+                break;
+            }
+        }
+
+        for (int i = y+1; i < 8; i++)
+        {
+            grid[x][i].setAttack(colour);
+            if (grid[x][i].getPiece() != ' ') {
+                break;
+            }
+        }
+
+        for (int i = y-1; i >= 0; i--)
+        {
+            grid[x][i].setAttack(colour);
+            if (grid[x][i].getPiece() != ' ') {
+                break;
+            }
+        }
+    }
+
+    void calculateBishopAttack(Piece src) {
+        int colour = src.getColour();
+        int x, y, counter = 0;
+        src.getCoords(x, y);
+
+
+        for (int i = 1; i < 8; i++)
+        {
+            if (x + i < 8 && y + i < 8) {
+                grid[x + i][y + i].setAttack(colour);
+                if (grid[x + i][y + i].getPiece() != ' ') {
+                    break;
+                }
+            }
+        }
+
+        for (int i = 1; i < 8; i++)
+        {
+            if (x + i < 8 && y - i > 0) {
+                grid[x + i][y - i].setAttack(colour);
+                if (grid[x + i][y - i].getPiece() != ' ') {
+                    break;
+                }
+            }
+        }
+
+        for (int i = 1; i < 8; i++)
+        {
+            if (x - i > 0 && y + i < 8) {
+                grid[x - i][y + i].setAttack(colour);
+                if (grid[x - i][y + i].getPiece() != ' ') {
+                    break;
+                }
+            }
+        }
+
+        for (int i = 1; i < 8; i++)
+        {
+            if (x - i > 0 && y - i > 0) {
+                grid[x - i][y - i].setAttack(colour);
+                if (grid[x - i][y - i].getPiece() != ' ') {
+                    break;
+                }
+            }
+        }
+    }
+
+    void calculateKnightAttack(Piece src) {
+        int colour = src.getColour();
+        int x, y, counter = 0;
+        src.getCoords(x, y);
+
+
+
+        if (x - 1 >= 0 && y - 2 >= 0) {
+            grid[x - 1][y - 2].setAttack(colour);
+        }
+        if (x - 2 >= 0 && y - 1 >= 0) {
+            grid[x - 2][y - 1].setAttack(colour);
+        }
+
+        if (x + 1 < 8 && y - 2 >= 0) {
+            grid[x + 1][y - 2].setAttack(colour);
+        }
+        if (x + 2 < 8 && y - 1 >= 0) {
+            grid[x + 2][y - 1].setAttack(colour);
+        }
+
+        if (x + 1 < 8 && y + 2 < 8) {
+            grid[x + 1][y + 2].setAttack(colour);
+        }
+        if (x + 2 < 8 && y + 1 < 8) {
+            grid[x + 2][y + 1].setAttack(colour);
+        }
+
+        if (x - 1 >= 0 && y + 2 < 8) {
+            grid[x - 1][y + 2].setAttack(colour);
+        }
+        if (x - 2 >= 0 && y + 1 < 8) {
+            grid[x - 2][y + 1].setAttack(colour);
+        }
+
+
+        
+
+    }
+
+    void calculateKingAttack(Piece src) {
+        int colour = src.getColour();
+        int x, y, counter = 0;
+        src.getCoords(x, y);
+
+        if (x - 1 >= 0) {
+            grid[x - 1][y].setAttack(colour);
+            if (y - 1 >= 0 ) {
+                grid[x - 1][y - 1].setAttack(colour);
+            }
+        }
+
+        if (y - 1 >= 0) {
+            grid[x][y - 1].setAttack(colour);
+            if (x + 1 < 8) {
+                grid[x + 1][y - 1].setAttack(colour);
+            }
+        }
+
+        if (x + 1 < 8) {
+            grid[x + 1][y].setAttack(colour);
+            if (y + 1 < 8) {
+                grid[x + 1][y + 1].setAttack(colour);
+            }
+        }
+
+        if (y + 1 < 8) {
+            grid[x][y + 1].setAttack(colour);
+
+            if (x - 1 >= 0) {
+                grid[x - 1][y + 1].setAttack(colour);
+            }
+        }
+        
+    }
+
+    void calculateAttackedSquares() {
+        for (int i = 0; i < piecePositions.size(); i++)
+        {
+            switch (piecePositions[i].getPiece()) {
+            case 'p': case 'P': calculatePawnAttack(piecePositions[i]);
+                    break;
+            case 'r': case 'R': calculateRookAttack(piecePositions[i]);
+                    break;
+            case 'b': case 'B': calculateBishopAttack(piecePositions[i]);
+                    break;
+            case 'h': case 'H': calculateKnightAttack(piecePositions[i]); 
+                    break;
+            case 'q': case 'Q': calculateRookAttack(piecePositions[i]); calculateBishopAttack(piecePositions[i]);
+                    break;
+            case 'k': case 'K': calculateKingAttack(piecePositions[i]);
+                    break;
+            }
+        }
     }
 
     void testCoords() {
         int x, y;
+        std::cout << "\n";
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                grid[i][j].getCoords(x,y);
-                std::cout << "X : " << x << " Y : " << y << "\n";
+
+                std::cout << "  |  ";
+                if (grid[i][j].underAttack(Black)) {
+                    std::cout << "W";
+                }
+
+                if (grid[i][j].underAttack(White)) {
+                    std::cout << "B";
+                }
+
+                if (!grid[i][j].underAttack(White) && !grid[i][j].underAttack(Black)) {
+                    std::cout << " ";
+                }
+                
             }
+            std::cout << "  |\n  ";
+            for (int j = 0; j < 8; j++)
+            {
+                std::cout << "  --- ";
+            }
+            std::cout << "  |\n";
         }
     }
 };
@@ -597,8 +898,11 @@ public:
     void driver() {
         b.displayBoard();
         while (playing == true) {
+            b.resetList();
+            b.calculateAttackedSquares();
             b.move();
             b.displayBoard();
+            //b.testCoords();
         }
         
     }
