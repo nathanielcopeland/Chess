@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <stdlib.h>
 #include <vector>
 
 enum Colour {
@@ -18,12 +19,12 @@ enum Coords {
 };
 
 class Piece {
-    int colour = White; 
-    int piece = Pawn;
+    int colour = Empty; 
+    int piece = Nothing;
     int x, y;
     int moveNum = 0;
     int enPassant = 0; //keeps the move number this was made at so that it can be checked if this matches board move number -1 and piece movenum == 1, can be captured with en passant
-    int attackedByWhite, attackedByBlack;
+    int attackedByWhite, attackedByBlack, pinnedByWhite, pinnedByBlack;
 public:
      char virtual getPiece() {
 
@@ -93,9 +94,18 @@ public:
          else attackedByBlack += 1;
      }
 
+     void setPinned(int colour) {
+         if (colour == White) {
+             pinnedByWhite += 1;
+         }
+         else pinnedByBlack += 1;
+     }
+
      void clearAttack() {
          attackedByBlack = 0;
          attackedByWhite = 0;
+         pinnedByWhite = 0;
+         pinnedByBlack = 0;
      }
 
      bool underAttack(int colour) {
@@ -103,6 +113,16 @@ public:
              return true;
          }
          if (colour == Black && attackedByWhite > 0) {
+             return true;
+         }
+         return false;
+     }
+
+     bool pinned(int colour) {
+         if (colour == White && pinnedByBlack > 0) {
+             return true;
+         }
+         if (colour == Black && pinnedByWhite > 0) {
              return true;
          }
          return false;
@@ -118,47 +138,110 @@ public:
     Piece grid[8][8];
     int moveNum = 0;
     std::vector<Piece> piecePositions;
+    std::string fenInput;
     Board() {
         //p2->setColour();
+
+        int tempChoice;
+        std::cout << "1. New Game: \n2. FEN: \n";
+        std::cin >> tempChoice;
+        std::cout << "\n";
+
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                 grid[i][j].setPiece(Nothing, Empty);
                 
-                if (i == 1) {
-                    grid[i][j].setPiece(Pawn, Black);
-                    
-                }
-                if (i == 6) {
-                    grid[i][j].setPiece(Pawn, White);
-                    
-                }
+                
                 grid[i][j].setCoords(i, j);
             }
         }
 
-        //rooks
-        grid[0][0].setPiece(Rook, Black);
-        grid[0][7].setPiece(Rook, Black);
-        grid[7][0].setPiece(Rook, White);
-        grid[7][7].setPiece(Rook, White);
-        //bishops
-        grid[0][2].setPiece(Bishop, Black);
-        grid[0][5].setPiece(Bishop, Black);
-        grid[7][2].setPiece(Bishop, White);
-        grid[7][5].setPiece(Bishop, White);
-        //Knights
-        grid[0][1].setPiece(Knight, Black);
-        grid[0][6].setPiece(Knight, Black);
-        grid[7][1].setPiece(Knight, White);
-        grid[7][6].setPiece(Knight, White);
-        //Queens
-        grid[0][3].setPiece(Queen, Black);
-        grid[7][3].setPiece(Queen, White);
-        //kings
-        grid[0][4].setPiece(King, Black);
-        grid[7][4].setPiece(King, White);
+
+        if(tempChoice != 2){
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+
+                    if (i == 1) {
+                        grid[i][j].setPiece(Pawn, Black);
+
+                    }
+                    if (i == 6) {
+                        grid[i][j].setPiece(Pawn, White);
+
+                    }
+                }
+            }
+
+            //rooks
+            grid[0][0].setPiece(Rook, Black);
+            grid[0][7].setPiece(Rook, Black);
+            grid[7][0].setPiece(Rook, White);
+            grid[7][7].setPiece(Rook, White);
+            //bishops
+            grid[0][2].setPiece(Bishop, Black);
+            grid[0][5].setPiece(Bishop, Black);
+            grid[7][2].setPiece(Bishop, White);
+            grid[7][5].setPiece(Bishop, White);
+            //Knights
+            grid[0][1].setPiece(Knight, Black);
+            grid[0][6].setPiece(Knight, Black);
+            grid[7][1].setPiece(Knight, White);
+            grid[7][6].setPiece(Knight, White);
+            //Queens
+            grid[0][3].setPiece(Queen, Black);
+            grid[7][3].setPiece(Queen, White);
+            //kings
+            grid[0][4].setPiece(King, Black);
+            grid[7][4].setPiece(King, White);
+        }
+        else {
+            std::cout << "input FEN code: ";
+            std::cin >> fenInput;
+            std::cout << "\n";
+            int counter1 = 0, counter2 = 0;
+            bool endOfPieces = false;
+            bool whiteToPlay = false;
+            for (int i = 0; i < fenInput.size(); i++)
+            {
+                switch (fenInput[i])
+                {
+                default:
+                    break;
+                case 'r': grid[counter2][counter1].setPiece(Rook, Black); counter1++;
+                    break;
+                case 'n': grid[counter2][counter1].setPiece(Knight, Black); counter1++;
+                    break;
+                case 'b': if (endOfPieces == false) { grid[counter2][counter1].setPiece(Bishop, Black); counter1++; }
+                    break;
+                case 'q': grid[counter2][counter1].setPiece(Queen, Black); counter1++;
+                    break;
+                case 'k': grid[counter2][counter1].setPiece(King, Black); counter1++;
+                    break;
+                case 'p': grid[counter2][counter1].setPiece(Pawn, Black); counter1++;
+                    break;
+                case '/': counter1 = 0; counter2++;
+                    break;
+                case 'R': grid[counter2][counter1].setPiece(Rook, White); counter1++;
+                    break;
+                case 'N': grid[counter2][counter1].setPiece(Knight, White); counter1++;
+                    break;
+                case 'B': grid[counter2][counter1].setPiece(Bishop, White); counter1++;
+                    break;
+                case 'Q': grid[counter2][counter1].setPiece(Queen, White); counter1++;
+                    break;
+                case 'K': grid[counter2][counter1].setPiece(King, White); counter1++;
+                    break;
+                case 'P': grid[counter2][counter1].setPiece(Pawn, White); counter1++;
+                    break;
+                case '1': case '2': case '3': case '4': case '5': case'6': case '7': case '8': counter1 += fenInput[i] -48;
+                    break;
+                }
+            }
+        }
+        
 
         
     }
@@ -211,6 +294,8 @@ public:
     }
 
     void move() {
+
+
         std::string playerMove = "";
         int srcColour;
         int dstColour;
@@ -261,6 +346,7 @@ public:
                             moveNum++;
                         }
                                 break;
+                        
                     }
                     
                     
@@ -349,6 +435,20 @@ public:
         moves = src.getMoveNumber();
         colour1 = src.getColour();
         colour2 = dst.getColour();
+
+
+
+        /* 
+        cleaner movement code potential solution
+        var1 = destination - source
+           if(var < 0) var = var / var *-1
+           else var = var / var
+
+        do twice to get x and y
+
+        if(x == 0 and y !== 0 || y == 0 and x != 0) //rook
+        if(x == y || x *-1 == y) //bishop
+        */
 
         if ((x1 != x2 && y1 == y2) || (x1 == x2 && y1 != y2)) {
             if (x1 != x2) {
@@ -676,42 +776,58 @@ public:
 
     void calculateRookAttack(Piece src) {
         int colour = src.getColour();
+        bool foundKing = false;
         int x, y, counter = 0;
+        int xDirection, yDirection;
         src.getCoords(x, y);
 
-
-
-        //if piece = king and counter = 1 set all the spaces before king as pinned
-
-        for (int i = x+1; i < 8; i++)
+        for (int i = 0; i < 4; i++) //loop the 4 directions
         {
-            grid[i][y].setAttack(colour);
-            if (grid[i][y].getPiece() != ' ') {
-                break;
+            if (i == 0) {
+                xDirection = 1;
+                yDirection = 0;
             }
-        }
-
-        for (int i = x-1; i >= 0; i--)
-        {
-            grid[i][y].setAttack(colour);
-            if (grid[i][y].getPiece() != ' ') {
-                break;
+            if (i == 1) {
+                xDirection = 0;
+                yDirection = -1;
             }
-        }
-
-        for (int i = y+1; i < 8; i++)
-        {
-            grid[x][i].setAttack(colour);
-            if (grid[x][i].getPiece() != ' ') {
-                break;
+            if (i == 2) {
+                xDirection = -1;
+                yDirection = 0;
             }
-        }
+            if (i == 3) {
+                xDirection = 0;
+                yDirection = 1;
+            }
 
-        for (int i = y-1; i >= 0; i--)
-        {
-            grid[x][i].setAttack(colour);
-            if (grid[x][i].getPiece() != ' ') {
-                break;
+            foundKing = false;
+            for (int j = 0; j < 2; j++) //loop through twice to check whether king is in the line
+            {
+                counter = 0;
+                
+                for (int k = 0; k < 8; k++) //loop through each square
+                {
+
+                    if (x + k * xDirection < 8 && x + k * xDirection >= 0 && y + k * yDirection < 8 && y + k * yDirection >= 0) {
+
+                        if (counter <= 1) {
+                            grid[x + k * xDirection][y + k * yDirection].setAttack(colour);
+                        }
+                        if (counter <= 2 && foundKing == true) {
+                            grid[x + k * xDirection][y + k * yDirection].setPinned(colour);
+                        }
+
+                        if ((grid[x + k * xDirection][y + k * yDirection].getPiece() == 'k' && colour == White) || (grid[x + k * xDirection][y + k * yDirection].getPiece() == 'K' && colour == Black)) {
+                            if (counter <= 2) {
+                                foundKing = true;
+                            }
+                        }
+
+                        if (grid[x + k * xDirection][y + k * yDirection].getPiece() != ' ') {
+                            counter++; 
+                        }
+                    }
+                }
             }
         }
     }
@@ -720,44 +836,54 @@ public:
         int colour = src.getColour();
         int x, y, counter = 0;
         src.getCoords(x, y);
-
-
-        for (int i = 1; i < 8; i++)
+        int xDirection, yDirection;
+        bool foundKing = false;
+        for (int i = 0; i < 4; i++) //loop the 4 directions
         {
-            if (x + i < 8 && y + i < 8) {
-                grid[x + i][y + i].setAttack(colour);
-                if (grid[x + i][y + i].getPiece() != ' ') {
-                    break;
-                }
+            if (i == 0) {
+                xDirection = 1;
+                yDirection = 1;
             }
-        }
-
-        for (int i = 1; i < 8; i++)
-        {
-            if (x + i < 8 && y - i > 0) {
-                grid[x + i][y - i].setAttack(colour);
-                if (grid[x + i][y - i].getPiece() != ' ') {
-                    break;
-                }
+            if (i == 1) {
+                xDirection = 1;
+                yDirection = -1;
             }
-        }
-
-        for (int i = 1; i < 8; i++)
-        {
-            if (x - i > 0 && y + i < 8) {
-                grid[x - i][y + i].setAttack(colour);
-                if (grid[x - i][y + i].getPiece() != ' ') {
-                    break;
-                }
+            if (i == 2) {
+                xDirection = -1;
+                yDirection = 1;
             }
-        }
+            if (i == 3) {
+                xDirection = -1;
+                yDirection = -1;
+            }
 
-        for (int i = 1; i < 8; i++)
-        {
-            if (x - i > 0 && y - i > 0) {
-                grid[x - i][y - i].setAttack(colour);
-                if (grid[x - i][y - i].getPiece() != ' ') {
-                    break;
+            foundKing = false;
+            for (int j = 0; j < 2; j++) //loop through twice to check whether king is in the line
+            {
+                counter = 0;
+
+                for (int k = 0; k < 8; k++) //loop through each square
+                {
+
+                    if (x + k * xDirection < 8 && x + k * xDirection >= 0 && y + k * yDirection < 8 && y + k * yDirection >= 0) { //check whether square is inbounds
+
+                        if (counter <= 1) {
+                            grid[x + k * xDirection][y + k * yDirection].setAttack(colour);
+                        }
+                        if (counter <= 2 && foundKing == true) {
+                            grid[x + k * xDirection][y + k * yDirection].setPinned(colour);
+                        }
+
+                        if ((grid[x + k * xDirection][y + k * yDirection].getPiece() == 'k' && colour == White) || (grid[x + k * xDirection][y + k * yDirection].getPiece() == 'K' && colour == Black)) {
+                            if (counter <= 2) {
+                                foundKing = true;
+                            }
+                        }
+
+                        if (grid[x + k * xDirection][y + k * yDirection].getPiece() != ' ') {
+                            counter++;
+                        }
+                    }
                 }
             }
         }
@@ -859,7 +985,7 @@ public:
         }
     }
 
-    void testCoords() {
+    void testAttacked() {
         int x, y;
         std::cout << "\n";
         for (int i = 0; i < 8; i++)
@@ -889,6 +1015,37 @@ public:
             std::cout << "  |\n";
         }
     }
+
+    void testPinned() {
+        int x, y;
+        std::cout << "\n";
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+
+                std::cout << "  |  ";
+                if (grid[i][j].pinned(Black)) {
+                    std::cout << "W";
+                }
+
+                if (grid[i][j].pinned(White)) {
+                    std::cout << "B";
+                }
+
+                if (!grid[i][j].pinned(White) && !grid[i][j].pinned(Black)) {
+                    std::cout << " ";
+                }
+
+            }
+            std::cout << "  |\n  ";
+            for (int j = 0; j < 8; j++)
+            {
+                std::cout << "  --- ";
+            }
+            std::cout << "  |\n";
+        }
+    }
 };
 
 class gameManager {
@@ -902,7 +1059,8 @@ public:
             b.calculateAttackedSquares();
             b.move();
             b.displayBoard();
-            //b.testCoords();
+            b.testPinned();
+            //b.testAttacked();
         }
         
     }
