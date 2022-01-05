@@ -1,0 +1,41 @@
+﻿  chess.cpp
+C:\Users\Nat\Documents\Chess\chess\chess.cpp(991,16): warning C4101:  'y': unreferenced local variable
+C:\Users\Nat\Documents\Chess\chess\chess.cpp(991,13): warning C4101:  'x': unreferenced local variable
+C:\Users\Nat\Documents\Chess\chess\chess.cpp(1022,16): warning C4101:  'y': unreferenced local variable
+C:\Users\Nat\Documents\Chess\chess\chess.cpp(1022,13): warning C4101:  'x': unreferenced local variable
+C:\Users\Nat\Documents\Chess\chess\shader_s.h(43,34): warning C4101:  'e': unreferenced local variable
+C:\Users\Nat\Documents\Chess\chess\graphics.h(62,12): warning C4305:  'return': truncation from 'int' to 'bool'
+C:\Users\Nat\Documents\Chess\chess\graphics.h(70,12): warning C4305:  'return': truncation from 'int' to 'bool'
+C:\Users\Nat\Documents\Chess\chess\graphics.h(171,54): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Nat\Documents\Chess\chess\graphics.h(173,37): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Nat\Documents\Chess\chess\graphics.h(178,54): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Nat\Documents\Chess\chess\graphics.h(180,37): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Nat\Documents\Chess\chess\graphics.h(185,54): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Nat\Documents\Chess\chess\graphics.h(187,37): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Nat\Documents\Chess\chess\graphics.h(193,53): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Nat\Documents\Chess\chess\graphics.h(195,36): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Nat\Documents\Chess\chess\graphics.h(200,54): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Nat\Documents\Chess\chess\graphics.h(202,36): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Nat\Documents\Chess\chess\graphics.h(207,53): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Nat\Documents\Chess\chess\graphics.h(209,35): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Nat\Documents\Chess\chess\graphics.h(252,15): warning C4101:  'texture1': unreferenced local variable
+C:\Users\Nat\Documents\Chess\chess\graphics.h(406,10): warning C4244:  '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Nat\Documents\Chess\chess\graphics.h(430,9): warning C4838:  conversion from 'double' to 'float' requires a narrowing conversion
+C:\Users\Nat\Documents\Chess\chess\graphics.h(430,9): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Nat\Documents\Chess\chess\graphics.h(430,29): warning C4838:  conversion from 'double' to 'float' requires a narrowing conversion
+C:\Users\Nat\Documents\Chess\chess\graphics.h(430,29): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Nat\Documents\Chess\chess\graphics.h(431,10): warning C4838:  conversion from 'double' to 'float' requires a narrowing conversion
+C:\Users\Nat\Documents\Chess\chess\graphics.h(431,10): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Nat\Documents\Chess\chess\graphics.h(431,30): warning C4838:  conversion from 'double' to 'float' requires a narrowing conversion
+C:\Users\Nat\Documents\Chess\chess\graphics.h(431,30): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Nat\Documents\Chess\chess\graphics.h(432,9): warning C4838:  conversion from 'double' to 'float' requires a narrowing conversion
+C:\Users\Nat\Documents\Chess\chess\graphics.h(432,9): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Nat\Documents\Chess\chess\graphics.h(432,29): warning C4838:  conversion from 'double' to 'float' requires a narrowing conversion
+C:\Users\Nat\Documents\Chess\chess\graphics.h(432,29): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Nat\Documents\Chess\chess\graphics.h(433,9): warning C4838:  conversion from 'double' to 'float' requires a narrowing conversion
+C:\Users\Nat\Documents\Chess\chess\graphics.h(433,9): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Nat\Documents\Chess\chess\graphics.h(433,28): warning C4838:  conversion from 'double' to 'float' requires a narrowing conversion
+C:\Users\Nat\Documents\Chess\chess\graphics.h(433,28): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Nat\Documents\Chess\chess\chess.cpp(502): warning C4715:  'Board::moveRook': not all control paths return a value
+C:\Users\Nat\Documents\Chess\chess\chess.cpp(55): warning C4715:  'Piece::getPiece': not all control paths return a value
+  chess.vcxproj -> C:\Users\Nat\Documents\Chess\x64\Debug\chess.exe
