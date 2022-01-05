@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <vector>
 
+ 
+
 enum Colour {
     White = 0, Black = 1, Empty = 2
 };
@@ -245,7 +247,7 @@ public:
 
         
     }
-
+	
     void resetList() {
 
        piecePositions.clear();
@@ -1048,6 +1050,8 @@ public:
     }
 };
 
+#include "graphics.h"
+
 class gameManager {
     Board b;
     bool playing = true;
@@ -1060,11 +1064,15 @@ public:
             b.move();
             b.displayBoard();
             b.testPinned();
-            //b.testAttacked();
+			//renderWindow();
+            b.testAttacked();
+			renderWindow(b);
         }
         
     }
 };
+
+
 
 
 int main()
@@ -1072,6 +1080,7 @@ int main()
 
      gameManager game;
      game.driver();
+	
 
 }
 
