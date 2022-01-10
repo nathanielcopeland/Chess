@@ -130,9 +130,6 @@ public:
          return false;
      }
 
-     void testAttack() {
-         std::cout << "Black : " << attackedByBlack << " White : " << attackedByWhite << "\n";
-     }
 };
 
 class Board {
@@ -140,7 +137,10 @@ public:
     Piece grid[8][8];
     int moveNum = 0;
     std::vector<Piece> piecePositions;
+    std::vector<Piece> attackedSquaresWhite, attackedSquaresBlack;
     std::string fenInput;
+    bool firstPress;
+    int xPos1, xPos2, yPos1, yPos2, bKingPosX, bKingPosY, wKingPosX, wKingPosY;
     Board() {
         //p2->setColour();
 
@@ -242,12 +242,19 @@ public:
                     break;
                 }
             }
-        }
-        
-
-        
+        }    
     }
 	
+    void setFirstMove(int x, int y) {
+            xPos1 = x;
+            yPos1 = y;
+    }
+
+    void setSecond(int x, int y) {
+        xPos2 = x;
+        yPos2 = y;
+    }
+
     void resetList() {
 
        piecePositions.clear();
@@ -262,6 +269,18 @@ public:
                 }
                 grid[i][j].clearAttack();
             }
+        }
+    }
+
+    virtual bool isFirstPress(int x, int y) {
+        if (firstPress == true ) {
+            if (grid[x][y].getPiece() == ' ') { return false; }
+            firstPress = false;
+            return true;
+        }
+        else {
+            firstPress = true;
+            return false;
         }
     }
 
@@ -329,6 +348,14 @@ public:
                         }
                                   break;
                         case 'r' : case 'R' : if (moveRook(grid[x1][y1], grid[x2][y2])) {
+                            if (srcColour == White) {
+                                grid[x2][y2].setPiece(Rook, White);
+                            }
+                            else {
+                                grid[x2][y2].setPiece(Rook, Black);
+                            }
+                            grid[x2][y2].setMoveNumber(grid[x1][x2].getMoveNumber());
+                            grid[x1][y1].setPiece(Queen, White);
                             moveNum++;
                         }
                                  break;
@@ -358,9 +385,143 @@ public:
 
 
         }
-        
-        //testCoords();
+
     }
+
+    bool canMove(Piece src, Piece dst) {
+        int x1, x2, y1, y2;
+        src.getCoords(x1, y1);
+        dst.getCoords(x2, y2);
+        switch (grid[x1][y1].getPiece()) {
+            case 'p': case 'P': if (movePawn(grid[x1][y1], grid[x2][y2])) {
+                return true;
+            }
+                    break;
+            case 'r': case 'R': if (moveRook(grid[x1][y1], grid[x2][y2])) {
+                return true;
+            }
+                    break;
+            case 'b': case 'B': if (moveBishop(grid[x1][y1], grid[x2][y2])) {
+                return true;
+            }
+                    break;
+            case 'h': case 'H': if (moveKnight(grid[x1][y1], grid[x2][y2])) {
+                return true;
+            }
+                    break;
+            case 'q': case 'Q': if (moveRook(grid[x1][y1], grid[x2][y2]) || moveBishop(grid[x1][y1], grid[x2][y2])) {
+                return true;
+            }
+                    break;
+            case 'k': case 'K': if (moveKing(grid[x1][y1], grid[x2][y2])) {
+                return true;
+            }
+                    break;
+
+        }
+        return false;
+    }
+
+
+    void move2() {
+        int x1, y1, x2, y2;
+        x1 = xPos1;
+        y1 = yPos1;
+        x2 = xPos2;
+        y2 = yPos2;
+        std::string playerMove = "";
+        int srcColour;
+        int dstColour;
+        
+            srcColour = grid[x1][y1].getColour();
+            dstColour = grid[x2][y2].getColour();
+            if (srcColour == (moveNum % 2) && dstColour != (moveNum % 2)) {
+
+                switch (grid[x1][y1].getPiece()) {
+                case 'p': case 'P': if (movePawn(grid[x1][y1], grid[x2][y2])) {
+                    if (srcColour == White) {
+                        grid[x2][y2].setPiece(Pawn, White);
+                    }
+                    else {
+                        grid[x2][y2].setPiece(Pawn, Black);
+                    }
+                    grid[x2][y2].setMoveNumber(grid[x1][x2].getMoveNumber());
+                    grid[x1][y1].setPiece(Nothing, Empty);
+                    moveNum++;
+                }
+                        break;
+                case 'r': case 'R': if (moveRook(grid[x1][y1], grid[x2][y2])) {
+                    if (srcColour == White) {
+                        grid[x2][y2].setPiece(Rook, White);
+                    }
+                    else {
+                        grid[x2][y2].setPiece(Rook, Black);
+                    }
+                    grid[x2][y2].setMoveNumber(grid[x1][x2].getMoveNumber());
+                    grid[x1][y1].setPiece(Nothing, Empty);
+                    moveNum++;
+                }
+                        break;
+                case 'b': case 'B': if (moveBishop(grid[x1][y1], grid[x2][y2])) {
+                    if (srcColour == White) {
+                        grid[x2][y2].setPiece(Bishop, White);
+                    }
+                    else {
+                        grid[x2][y2].setPiece(Bishop, Black);
+                    }
+                    grid[x2][y2].setMoveNumber(grid[x1][x2].getMoveNumber());
+                    grid[x1][y1].setPiece(Nothing, Empty);
+                    moveNum++;
+                }
+                        break;
+                case 'h': case 'H': if (moveKnight(grid[x1][y1], grid[x2][y2])) {
+                    if (srcColour == White) {
+                        grid[x2][y2].setPiece(Knight, White);
+                    }
+                    else {
+                        grid[x2][y2].setPiece(Knight, Black);
+                    }
+                    grid[x2][y2].setMoveNumber(grid[x1][x2].getMoveNumber());
+                    grid[x1][y1].setPiece(Nothing, Empty);
+                    moveNum++;
+                }
+                        break;
+                case 'q': case 'Q': if (moveRook(grid[x1][y1], grid[x2][y2]) || moveBishop(grid[x1][y1], grid[x2][y2])) {
+                    if (srcColour == White) {
+                        grid[x2][y2].setPiece(Queen, White);
+                    }
+                    else {
+                        grid[x2][y2].setPiece(Queen, Black);
+                    }
+                    grid[x2][y2].setMoveNumber(grid[x1][x2].getMoveNumber());
+                    grid[x1][y1].setPiece(Nothing, Empty);
+                    moveNum++;
+                }
+                        break;
+                case 'k': case 'K': if (moveKing(grid[x1][y1], grid[x2][y2])) {
+                    if (srcColour == White) {
+                        grid[x2][y2].setPiece(King, White);
+                        wKingPosX = x2;
+                        wKingPosY = y2;
+                    }
+                    else {
+                        grid[x2][y2].setPiece(King, Black);
+                        bKingPosX = x2;
+                        bKingPosY = y2;
+                    }
+
+                    grid[x2][y2].setMoveNumber(grid[x1][x2].getMoveNumber());
+                    grid[x1][y1].setPiece(Nothing, Empty);
+                    moveNum++;
+                }
+                        break;
+
+                }
+
+            }
+
+        }
+
 
     bool movePawn(Piece src, Piece dst) {
         int x1, y1, x2, y2, moves, colour1, colour2;
@@ -372,23 +533,14 @@ public:
         colour2 = dst.getColour();
 
 
-        grid[1][2].testAttack();
-
         if (((x1 + 1 == x2) || (x1 + 2 == x2 && moves == 0)) && colour1 == Black) {
             if ((y1 + 1 == y2 || y1 - 1 == y2) && colour2 == White && x1 + 1 == x2) {
-                grid[x2][y2].setPiece(Pawn, Black);
-                grid[x2][y2].setMoveNumber(moves);
-                grid[x2][y2].setCoords(x2, y2);
-                grid[x1][y1].setPiece(Nothing, Empty);
+
 
                 return true;
             }
             else if (y1 == y2 && colour2 == Empty) {
-                grid[x2][y2].setPiece(Pawn, Black);
-                grid[x2][y2].setMoveNumber(moves);
-                grid[x2][y2].setCoords(x2, y2);
-                grid[x1][y1].setPiece(Nothing, Empty);
-                std::cout << "moves : " << moves << "\n";
+
                 if (x1 + 2 == x2) {
                     grid[x2][y2].setEnPassant(moveNum);
                 }
@@ -396,11 +548,7 @@ public:
             }
             else if ((y1 + 1 == y2 || y1 - 1 == y2) && grid[x2-1][y2].getColour() == White) {  //enPassant
                 if (grid[x2 - 1][y2].getEnPassant() == moveNum - 1 && grid[x2 - 1][y2].getMoveNumber() == 1) {
-                    grid[x2][y2].setPiece(Pawn, Black);
-                    grid[x2][y2].setMoveNumber(moves);
-                    grid[x2][y2].setCoords(x2, y2);
-                    grid[x1][y1].setPiece(Nothing, Empty);
-                    grid[x2-1][y2].setPiece(Nothing, Empty);
+
                     return true;
                 }
             }
@@ -408,18 +556,11 @@ public:
 
         if (((x1 - 1 == x2) || (x1 - 2 == x2 && moves == 0)) && colour1 == White) {
             if ((y1 + 1 == y2 || y1 - 1 == y2) && colour2 == Black && x1 - 1 == x2) {
-                grid[x2][y2].setPiece(Pawn, White);
-                grid[x2][y2].setMoveNumber(moves);
-                grid[x2][y2].setCoords(x2, y2);
-                grid[x1][y1].setPiece(Nothing, Empty);
+
                 return true;
             }
             else if(y1 == y2 && colour2 == Empty) {
-                grid[x2][y2].setPiece(Pawn, White);
-                grid[x2][y2].setMoveNumber(moves);
-                grid[x2][y2].setCoords(x2, y2);
-                grid[x1][y1].setPiece(Nothing, Empty);
-                std::cout << "moves : " << moves << "\n";
+
                 if (x1 - 2 == x2) {
                     grid[x2][y2].setEnPassant(moveNum);
                 }
@@ -485,20 +626,21 @@ public:
                 }
             }
 
-            if (colour1 == White) {
+            /*if (colour1 == White) {
                 grid[x2][y2].setPiece(Rook, White);
             }
             else {
                 grid[x2][y2].setPiece(Rook, Black);
-            }
+            }*/
             
-            grid[x2][y2].setMoveNumber(moves);
-            grid[x2][y2].setCoords(x2, y2);
-            grid[x1][y1].setPiece(Nothing, Empty);
-            std::cout << "moves : " << moves << "\n";
+            //grid[x2][y2].setMoveNumber(moves);
+            ////grid[x2][y2].setCoords(x2, y2);
+            //grid[x1][y1].setPiece(Nothing, Empty);
+            //std::cout << "moves : " << moves << "\n";
             return true;
 
         }
+        return false;
     }
 
     bool moveBishop(Piece src, Piece dst) {
@@ -559,7 +701,7 @@ public:
 
             
 
-            if (colour1 == White) {
+            /*if (colour1 == White) {
                 grid[x2][y2].setPiece(Bishop, White);
             }
             else {
@@ -569,7 +711,7 @@ public:
             grid[x2][y2].setMoveNumber(moves);
             grid[x2][y2].setCoords(x2, y2);
             grid[x1][y1].setPiece(Nothing, Empty);
-            std::cout << "moves : " << moves << "\n";
+            std::cout << "moves : " << moves << "\n";*/
             return true;
         }
         return false;
@@ -585,7 +727,7 @@ public:
 
 
         if ((x1 + 2 == x2 && y1 + 1 == y2) || (x1 + 2 == x2 && y1 - 1 == y2) || (x1 - 2 == x2 && y1 + 1 == y2) || (x1 - 2 == x2 && y1 - 1 == y2) || (y1 + 2 == y2 && x1 + 1 == x2) || (y1 + 2 == y2 && x1 - 1 == x2) || (y1 - 2 == y2 && x1 + 1 == x2) || (y1 - 2 == y2 && x1 - 1 == x2)) {
-            if (colour1 == White) {
+           /* if (colour1 == White) {
                 grid[x2][y2].setPiece(Knight, White);
             }
             else {
@@ -595,7 +737,7 @@ public:
             grid[x2][y2].setMoveNumber(moves);
             grid[x2][y2].setCoords(x2, y2);
             grid[x1][y1].setPiece(Nothing, Empty);
-            std::cout << "moves : " << moves << "\n";
+            std::cout << "moves : " << moves << "\n";*/
             return true;
         }
         return false;
@@ -735,16 +877,20 @@ public:
             if (x1 - x2 == 0 && y1 - y2 == 0) {
                 return false;
             }
-            if (colour1 == White) {
+            /*if (colour1 == White) {
                 grid[x2][y2].setPiece(King, White);
+                wKingPosX = x2;
+                wKingPosY = y2;
             }
             else {
                 grid[x2][y2].setPiece(King, Black);
+                bKingPosX = x2;
+                bKingPosY = y2;
             }
 
             grid[x2][y2].setMoveNumber(moves);
             grid[x2][y2].setCoords(x2, y2);
-            grid[x1][y1].setPiece(Nothing, Empty);
+            grid[x1][y1].setPiece(Nothing, Empty);*/
             std::cout << "moves : " << moves << "\n";
             return true;
         }
@@ -1018,6 +1164,49 @@ public:
         }
     }
 
+    bool checkMate() {
+        if (moveNum % 2 == 0) {
+            if (grid[bKingPosX][bKingPosY].underAttack(White)) {
+                //check 8 squares around king
+
+                //check if a piece can that is not pinned can go to pinned square
+                for (int i = 0; i < piecePositions.size(); i++)
+                {
+                    if (piecePositions[i].getColour() == Black) {
+                        for (int j = 0; j < attackedSquaresWhite.size(); j++)
+                        {
+                            
+                            if (canMove(piecePositions[i], attackedSquaresWhite[i]) && !piecePositions[i].pinned(White)) 
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+
+                for (int i = 0; i < attackedSquaresBlack.size(); i++)
+                {
+                    if (attackedSquaresBlack[i].underAttack(Black)) {
+                        return false;
+                    }
+                }
+            }
+            else return false;
+            
+
+            
+            
+
+            
+        }
+        else {
+            if (grid[wKingPosX][wKingPosY].underAttack(Black)) {
+                //check 8 squares around king
+            }
+            else return false;
+        }
+    }
+
     void testPinned() {
         int x, y;
         std::cout << "\n";
@@ -1048,6 +1237,21 @@ public:
             std::cout << "  |\n";
         }
     }
+
+    void setAttackedSquares() { // loop through board and add attacked squares to vector
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if (grid[i][j].pinned(Black)){
+                    attackedSquaresBlack.push_back(grid[i][j]);
+                }
+                if (grid[i][j].pinned(White)) {
+                    attackedSquaresWhite.push_back(grid[i][j]);
+                }
+            }
+        }
+    }
 };
 
 #include "graphics.h"
@@ -1057,17 +1261,11 @@ class gameManager {
     bool playing = true;
 public:
     void driver() {
-        b.displayBoard();
-        while (playing == true) {
-            b.resetList();
-            b.calculateAttackedSquares();
-            b.move();
-            b.displayBoard();
-            b.testPinned();
-			//renderWindow();
-            b.testAttacked();
+        //b.displayBoard();
+        //while (playing == true) {
+
 			renderWindow(b);
-        }
+       // }
         
     }
 };

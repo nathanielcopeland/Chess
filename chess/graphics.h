@@ -9,7 +9,7 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 bool drawBoard(char piece, unsigned int & VAO2, int x, int y, unsigned int & texture);
 void processInput(GLFWwindow* window);
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods, Board b);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 800;
@@ -62,6 +62,8 @@ bool renderWindow(Board b) {
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
+
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
 	//initialise glad
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -307,6 +309,11 @@ bool renderWindow(Board b) {
 	//// or set it via the texture class
 	//ourShader.setInt("texture2", 1);
 
+	int var = 20;
+	int* test;
+	
+	test = &var;
+	glfwSetWindowUserPointer(window, &b);
 
 
 	while (!glfwWindowShouldClose(window))
@@ -314,7 +321,7 @@ bool renderWindow(Board b) {
 		// input
 		// -----
 		processInput(window);
-		//glfwSetMouseButtonCallback(window, mouse_button_callback);
+		
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -370,8 +377,9 @@ bool renderWindow(Board b) {
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		//game.driver();
-		//b.resetList();
-		//b.calculateAttackedSquares();
+		b.resetList();
+		b.calculateAttackedSquares();
+		b.testPinned();
 		//b.move();
 		//b.displayBoard();
 	}
@@ -393,19 +401,22 @@ bool renderWindow(Board b) {
 void processInput(GLFWwindow* window)
 {
 	double  mX, mY;
-	int temp;
+	int xPos, yPos;
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+	/*if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
 		
 		glfwGetCursorPos(window, &mX, &mY);
 
 		
 		mX = mX / (SCR_HEIGHT / 8);
-		temp = mX;
-			std::cout << "mx: " << temp << " \n";
-	}
+		mY = mY / ((SCR_WIDTH - 200) / 8);
+
+		xPos = mX;
+		yPos = mY;
+			std::cout << "xPos: " << xPos << " yPos: " << yPos << " \n";
+	}*/
 }
 
 bool drawBoard(char piece, unsigned int & VAO2, int x, int y, unsigned int & texture) {
@@ -689,10 +700,47 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 
 
- void mouse_button_callback(GLFWwindow* window, int button, int action, int mods, Board b)
+ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		std::cout << "mouse left click \n";
-	}
-		
+	 double  mX, mY;
+	 int xPos, yPos, xPos2, yPos2;
+
+	 glfwGetWindowUserPointer(window);
+	 Board* b = reinterpret_cast<Board*>(glfwGetWindowUserPointer(window));
+
+	 if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+
+		 glfwGetCursorPos(window, &mY, &mX);
+
+		 mX = mX / ((SCR_HEIGHT - 200) / 8);
+		 mY = mY / (SCR_WIDTH / 8);
+
+		 xPos = mX;
+		 yPos = mY;
+		 
+
+		 if (b->isFirstPress(xPos, yPos)) {
+			 
+
+			 b->setFirstMove(xPos, yPos);
+		 }
+		 else {
+
+
+			 b->setSecond(xPos, yPos);
+
+			 b->move2();
+		 }
+
+	 };
+
+	 if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+
+		 glfwGetCursorPos(window, &mY, &mX);
+
+
+		 
+		 //b->displayBoard();
+	 };
+	
 }

@@ -1,16 +1,8 @@
-﻿chess.obj : error LNK2019: unresolved external symbol _gladLoadGLLoader referenced in function "bool __cdecl renderWindow(void)" (?renderWindow@@YA_NXZ)
-chess.obj : error LNK2019: unresolved external symbol _glfwInit referenced in function "bool __cdecl renderWindow(void)" (?renderWindow@@YA_NXZ)
-chess.obj : error LNK2019: unresolved external symbol _glfwTerminate referenced in function "bool __cdecl renderWindow(void)" (?renderWindow@@YA_NXZ)
-chess.obj : error LNK2019: unresolved external symbol _glfwWindowHint referenced in function "bool __cdecl renderWindow(void)" (?renderWindow@@YA_NXZ)
-chess.obj : error LNK2019: unresolved external symbol _glfwCreateWindow referenced in function "bool __cdecl renderWindow(void)" (?renderWindow@@YA_NXZ)
-chess.obj : error LNK2019: unresolved external symbol _glfwWindowShouldClose referenced in function "bool __cdecl renderWindow(void)" (?renderWindow@@YA_NXZ)
-chess.obj : error LNK2019: unresolved external symbol _glfwPollEvents referenced in function "bool __cdecl renderWindow(void)" (?renderWindow@@YA_NXZ)
-chess.obj : error LNK2019: unresolved external symbol _glfwMakeContextCurrent referenced in function "bool __cdecl renderWindow(void)" (?renderWindow@@YA_NXZ)
-chess.obj : error LNK2019: unresolved external symbol _glfwSwapBuffers referenced in function "bool __cdecl renderWindow(void)" (?renderWindow@@YA_NXZ)
-chess.obj : error LNK2019: unresolved external symbol _glfwGetProcAddress referenced in function "bool __cdecl renderWindow(void)" (?renderWindow@@YA_NXZ)
-chess.obj : error LNK2019: unresolved external symbol "void __cdecl processInput(struct GLFWwindow *)" (?processInput@@YAXPAUGLFWwindow@@@Z) referenced in function "bool __cdecl renderWindow(void)" (?renderWindow@@YA_NXZ)
-chess.obj : error LNK2001: unresolved external symbol _glad_glClear
-chess.obj : error LNK2001: unresolved external symbol _glad_glClearColor
-chess.obj : error LNK2001: unresolved external symbol _glad_glViewport
-C:\Users\Nat\Documents\graphics_openGL\Libraries\lib\glfw3.lib : warning LNK4272: library machine type 'x64' conflicts with target machine type 'x86'
-C:\Users\Nat\Documents\Chess\Debug\chess.exe : fatal error LNK1120: 14 unresolved externals
+﻿  chess.cpp
+C:\Users\Nat\source\repos\chess\repo\chess\chess.cpp(209,31): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Nat\source\repos\chess\repo\chess\chess.cpp(971,27): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Nat\source\repos\chess\repo\chess\chess.cpp(991,16): warning C4101: 'y': unreferenced local variable
+C:\Users\Nat\source\repos\chess\repo\chess\chess.cpp(991,13): warning C4101: 'x': unreferenced local variable
+C:\Users\Nat\source\repos\chess\repo\chess\chess.cpp(1022,16): warning C4101: 'y': unreferenced local variable
+C:\Users\Nat\source\repos\chess\repo\chess\chess.cpp(1022,13): warning C4101: 'x': unreferenced local variable
+C:\Users\Nat\source\repos\chess\repo\chess\graphics.h(1,10): fatal error C1083: Cannot open include file: 'glad/glad.h': No such file or directory
